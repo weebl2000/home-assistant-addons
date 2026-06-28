@@ -106,6 +106,39 @@ install_tools() {
     bashio::log.info "Tools installed successfully"
 }
 
+# Update Claude Code CLI to the latest published version on each startup.
+# The CLI is installed into the container's ephemeral filesystem at build
+# time, so any self-updates are lost on reboot. Re-installing here keeps the
+# add-on on the latest version across Home Assistant restarts.
+update_claude_cli() {
+    local auto_update
+    auto_update=$(bashio::config 'auto_update_claude' 'true')
+
+    if [ "$auto_update" != "true" ]; then
+        bashio::log.info "Claude Code auto-update disabled in configuration"
+        return 0
+    fi
+
+    bashio::log.info "Checking for Claude Code CLI updates..."
+
+    local current_version
+    current_version=$(claude --version 2>/dev/null || echo "unknown")
+    bashio::log.info "Current Claude Code version: ${current_version}"
+
+    if npm install -g @anthropic-ai/claude-code@latest >/dev/null 2>&1; then
+        npm cache clean --force >/dev/null 2>&1 || true
+        local new_version
+        new_version=$(claude --version 2>/dev/null || echo "unknown")
+        if [ "$new_version" != "$current_version" ]; then
+            bashio::log.info "Claude Code updated: ${current_version} -> ${new_version}"
+        else
+            bashio::log.info "Claude Code already up to date (${new_version})"
+        fi
+    else
+        bashio::log.warning "Failed to update Claude Code CLI (network issue?); using bundled version ${current_version}"
+    fi
+}
+
 # Install persistent packages from config and saved state
 install_persistent_packages() {
     bashio::log.info "Checking for persistent packages..."
@@ -365,6 +398,7 @@ main() {
 
     init_environment
     install_tools
+    update_claude_cli
     setup_session_picker
     install_persistent_packages
     generate_ha_context

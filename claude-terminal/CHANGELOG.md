@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.3.0
+
+### ✨ New Features
+- **Keep Claude Code on the latest version across restarts**: The CLI is now updated to the latest published version on every add-on startup, instead of being pinned to whatever was bundled in the image at build time. Previously, rebooting Home Assistant reverted Claude Code to the bundled version.
+  - New `auto_update_claude` configuration option (enabled by default)
+  - The update is non-fatal: if the network is unavailable at startup, the add-on falls back to the bundled version and continues
+
+### 🛠️ Configuration
+Disable the per-startup update (and stay on the bundled version) with:
+```yaml
+auto_update_claude: false
+```
+
 ## 2.2.2
 
 ### 🐛 Bug Fixes

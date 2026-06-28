@@ -25,6 +25,7 @@ Your OAuth credentials are stored in the `/config/claude-config` directory and w
 | Option | Default | Description |
 |--------|---------|-------------|
 | `auto_launch_claude` | `true` | Automatically start Claude when opening the terminal |
+| `auto_update_claude` | `true` | Update the Claude Code CLI to the latest version on every startup |
 | `enable_ha_mcp` | `true` | Enable Home Assistant MCP server integration |
 | `persistent_apk_packages` | `[]` | APK packages to install on every startup |
 | `persistent_pip_packages` | `[]` | Python packages to install on every startup |
